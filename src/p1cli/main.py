@@ -45,12 +45,15 @@ def format_output(
             else:
                 print(f"### {group_name}s")
             for item in items:
-                print(f"{item['name']}{item['signature']}")
+                print(f"**{item['name']}**{item['signature']}")
                 if docstrings and "docstring" in item:
                     doc = item["docstring"]
                     if doc:
-                        first_line = doc.split("\n")[0][:80]
-                        print(f"    {first_line}")
+                        print()
+                        for line in doc.split("\n")[:30]:
+                            print(f"    {line}")
+                        if len(doc.split("\n")) > 30:
+                            print(f"    ...")
                 print()
     elif "signatures" in results:
         print(f"### {package}")
