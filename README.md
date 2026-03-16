@@ -10,6 +10,8 @@ Agents need good context to succeed. Currently, this is solved with:
 
 p1cli takes a different approach: query the actual code in your `.venv`. What you see is what actually exists — no abstraction layers, no sync issues.
 
+LLMs know really well standard library, but this approach is especially useful for private packages or less popular ones
+
 For more information, check the documentation [here](https://p1blue.github.io/p1cli/)
 
 ## Install
@@ -23,7 +25,7 @@ uv pip install -e .
 p1cli is also available as an installable skill for AI agents:
 
 ```bash
-npx skills add p1blue/p1cli@p1cli
+npx skills add p1blue/p1cli
 ```
 
 This enables agents to use p1cli commands directly.
@@ -64,6 +66,4 @@ MIT © 2026 p1blue
 
 ## Disclaimers
 
-This is mainly vibe coded to quickly try out this and test the idea. So far, it helps me a lot with agent workflows, this is a global intuition that I have. It could be useful to run benchmarks on this.
-
-Also, I'm currently working almost exclusively with python, and I don't have much time to spend for now, so only python is available. Feel free to implement other languages if you want to
+This is mainly vibe coded to quickly try out this and test the idea. So far, it helps me a lot with agent workflows, this is a global intuition that I have. It could be useful to run benchmarks on this. Also, I'm currently working almost exclusively with python, and I don't have much time to spend for now, so only python is available. Feel free to implement other languages if you want to
