@@ -5,8 +5,12 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from p1cli.p1cli_python.signature import is_public, get_signature, extract_signatures
-from p1cli.p1cli_python.docstring import get_docstring, extract_docstrings
+from p1cli.p1cli_python.signature.main import (
+    is_public,
+    get_signature,
+    extract_signatures,
+)
+from p1cli.p1cli_python.docstring.main import get_docstring, extract_docstrings
 from p1cli.p1cli_python import (
     find_package_in_venv,
     resolve_package,
@@ -132,6 +136,16 @@ class TestResolvePackage:
         result = resolve_package("nonexistent_package_xyz")
         assert result is None
 
+    def test_resolve_polars_series_submodule(self):
+        result = resolve_package("polars.series")
+        assert result is not None
+        assert result.name == "series"
+
+    def test_resolve_polars_dataframe_submodule(self):
+        result = resolve_package("polars.dataframe")
+        assert result is not None
+        assert result.name == "dataframe"
+
 
 class TestFindP1cliFile:
     def test_no_p1cli_file(self, tmp_path):
@@ -217,7 +231,7 @@ class TestCLI:
             ["python", "-m", "p1cli.main", "python", "polars"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent,
+            cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
         assert "polars" in result.stdout.lower()
@@ -228,7 +242,7 @@ class TestCLI:
             ["python", "-m", "p1cli.main", "python", "fastapi"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent,
+            cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
         assert "fastapi" in result.stdout.lower()
@@ -239,7 +253,7 @@ class TestCLI:
             ["python", "-m", "p1cli.main", "python", "polars", "--regex", "^Data"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent,
+            cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
         assert "DataFrame" in result.stdout
@@ -250,18 +264,60 @@ class TestCLI:
             ["python", "-m", "p1cli.main", "python", "polars", "--json-output"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent,
+            cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
         assert result.stdout.startswith("{")
         assert '"signatures"' in result.stdout
+
+    def test_cli_ls(self):
+        result = subprocess.run(
+            ["python", "-m", "p1cli.main", "python", "polars", "--ls"],
+            capture_output=True,
+            text=True,
+            cwd=Path(__file__).parent.parent.parent,
+        )
+        assert result.returncode == 0
+        assert "dataframe" in result.stdout
+        assert "lazyframe" in result.stdout
+
+    def test_cli_ls_json(self):
+        result = subprocess.run(
+            ["python", "-m", "p1cli.main", "python", "polars", "--ls", "--json-output"],
+            capture_output=True,
+            text=True,
+            cwd=Path(__file__).parent.parent.parent,
+        )
+        assert result.returncode == 0
+        assert '"submodules"' in result.stdout
+
+    def test_cli_submodule_series(self):
+        result = subprocess.run(
+            ["uv", "run", "p1cli", "python", "polars.series"],
+            capture_output=True,
+            text=True,
+            cwd=Path(__file__).parent.parent.parent,
+        )
+        assert result.returncode == 0
+        assert "polars.series" in result.stdout
+        assert "Series" in result.stdout
+
+    def test_cli_submodule_dataframe(self):
+        result = subprocess.run(
+            ["python", "-m", "p1cli.main", "python", "polars.dataframe"],
+            capture_output=True,
+            text=True,
+            cwd=Path(__file__).parent.parent.parent,
+        )
+        assert result.returncode == 0
+        assert "polars.dataframe" in result.stdout
 
     def test_cli_not_found(self):
         result = subprocess.run(
             ["python", "-m", "p1cli.main", "python", "nonexistent_package_xyz"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent,
+            cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 1
         assert "not found" in result.stderr.lower()

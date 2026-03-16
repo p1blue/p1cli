@@ -22,17 +22,43 @@ def find_package_in_venv(package_name: str, venv_path: Path) -> Path | None:
     )
     if not site_packages.exists():
         return None
+
+    parts = package_name.split(".")
+    base_name = parts[0].replace("-", "_")
+
     pkg_dirs = [
         d
         for d in site_packages.iterdir()
         if d.is_dir() and not d.name.endswith(".dist-info")
     ]
+
+    parent_path = None
     for d in pkg_dirs:
-        if d.name.replace("-", "_") == package_name.replace("-", "_"):
-            return d
-        if d.name.startswith(package_name.replace("-", "_") + "-"):
-            return d
-    return None
+        if d.name.replace("-", "_") == base_name:
+            parent_path = d
+            break
+        if d.name.startswith(base_name + "-"):
+            parent_path = d
+            break
+
+    if parent_path is None:
+        return None
+
+    if len(parts) == 1:
+        return parent_path
+
+    current_path = parent_path
+    for part in parts[1:]:
+        next_path = current_path / part
+        if next_path.exists() and next_path.is_dir():
+            current_path = next_path
+        else:
+            py_file = current_path / f"{part}.py"
+            if py_file.exists() and py_file.is_file():
+                return py_file
+            return None
+
+    return current_path
 
 
 def get_package_path(package_name: str) -> Path | None:
@@ -77,9 +103,15 @@ def get_module_from_package(package_name: str) -> Any:
 
 def load_module(module_path: Path, module_name: str) -> Any | None:
     try:
-        import importlib.util
+        import importlib
 
-        spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+        if module_path.is_file():
+            spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+        else:
+            spec = importlib.util.spec_from_file_location(
+                module_name, str(module_path / "__init__.py")
+            )
+
         if spec and spec.loader:
             module = importlib.util.module_from_spec(spec)
             sys.modules[module_name] = module
@@ -89,7 +121,9 @@ def load_module(module_path: Path, module_name: str) -> Any | None:
         logger.debug(f"Failed to import module from {module_path}: {e}")
 
     try:
-        return get_module_from_package(module_name)
+        import importlib
+
+        return importlib.import_module(module_name)
     except Exception as e2:
         logger.debug(f"Failed to import module {module_name}: {e2}")
         return None
@@ -111,10 +145,43 @@ def load_p1cli_context(p1cli_path: Path) -> str | None:
         return None
 
 
-app = cyclopts.App()
+def list_submodules(package_path: Path) -> list[str]:
+    submodules = []
+    for item in package_path.iterdir():
+        if item.is_file():
+            if item.suffix == ".py" and not item.name.startswith("_"):
+                submodules.append(item.stem)
+        elif item.is_dir():
+            init_file = item / "__init__.py"
+            if init_file.exists() and not item.name.startswith("_"):
+                submodules.append(item.name)
+    return sorted(submodules)
 
 
-@app.command
+python_app = cyclopts.App()
+
+
+@python_app.command
+def ls(
+    package: str,
+    json_output: bool = False,
+) -> None:
+    """List available submodules in a package."""
+    package_path = resolve_package(package)
+    if not package_path:
+        print(f"Error: Package '{package}' not found in .venv", file=sys.stderr)
+        sys.exit(1)
+
+    submodules = list_submodules(package_path)
+
+    if json_output:
+        print(json.dumps({"submodules": submodules}, indent=2))
+    else:
+        for sm in submodules:
+            print(sm)
+
+
+@python_app.default
 def python(
     package: str,
     signature: bool = True,
