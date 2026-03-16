@@ -1,0 +1,35 @@
+# docstring
+
+Extracts docstrings from Python modules.
+
+## Key insight
+
+Docstrings tell agents WHAT functions/classes do - descriptions, parameters, returns, examples.
+
+## What docstrings typically contain
+
+- One-line summary
+- Extended description
+- Parameters (name, type, description)
+- Returns description
+- Examples (often in doctest format)
+- See also references
+
+## Limitations
+
+- Not all modules have good docstrings
+- Format varies (Google style, NumPy style, plain)
+- May be outdated vs actual code
+- Private methods often lack docs
+
+## How p1cli displays
+
+- Shows first 30 lines by default in text mode
+- Full docstring in JSON mode
+- Combined with signature when both requested
+
+## For agents
+
+Read docstrings alongside signatures - together they provide complete picture:
+- Signature = how to call
+- Docstring = what it does, what parameters mean

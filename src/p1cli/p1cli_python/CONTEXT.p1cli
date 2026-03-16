@@ -1,0 +1,18 @@
+# p1cli_python
+
+Core module for resolving and loading Python packages from `.venv`.
+
+## Package resolution logic
+
+- If package == "p1cli" or starts with "p1cli.", look in src/p1cli
+- Otherwise, use uv tree to find packages, fall back to site-packages scan
+- Supports both directory modules (polars.series) and file modules (fastapi.cli)
+
+## Special cases
+
+- Submodules with dots: "polars.dataframe" → find "polars" then "dataframe" subdir
+- File modules: "fastapi.cli" → look for "cli.py" inside fastapi package
+
+## Dev mode
+
+When working on p1cli itself, it resolves from src/ without needing .venv

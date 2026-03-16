@@ -1,0 +1,29 @@
+# signature
+
+Extracts function/class signatures using Python's inspect module.
+
+## Key insight
+
+Signatures tell agents HOW to call functions - parameters, defaults, etc.
+
+## Type detection
+
+Uses inspect module to detect:
+- **Class** - via inspect.isclass()
+- **Function** - via inspect.isfunction()
+- **Method** - via inspect.ismethod()
+- **Builtin** - via inspect.isbuiltin()
+- **Coroutine** - via inspect.iscoroutinefunction()
+
+## Output formats
+
+1. **Flat** - just {name: signature} dict (when only signature requested)
+2. **Grouped** - {Type: [{name, signature}, ...]} (when both sig+doc requested)
+
+## What signatures don't show
+
+- Return types (not available in Python signatures)
+- Type hints on parameters (needs separate parsing)
+- Complex default values may be truncated
+
+Use --regex to filter: `p1cli python polars --regex "^Data"`

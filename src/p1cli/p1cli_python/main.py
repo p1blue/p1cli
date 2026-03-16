@@ -146,20 +146,25 @@ def load_module(module_path: Path, module_name: str) -> Any | None:
         return None
 
 
-def find_p1cli_file(module_path: Path) -> Path | None:
+def find_p1cli_file(module_path: Path) -> list[Path]:
+    """Find all CONTEXT.p1cli files from module_path up to root."""
+    found = []
     for parent in [module_path] + list(module_path.parents):
-        p1cli_file = parent / ".p1cli"
+        p1cli_file = parent / "CONTEXT.p1cli"
         if p1cli_file.exists():
-            return p1cli_file
-    return None
+            found.append(p1cli_file)
+    return found
 
 
-def load_p1cli_context(p1cli_path: Path) -> str | None:
-    try:
-        return p1cli_path.read_text()
-    except Exception as e:
-        logger.error(f"Failed to read .p1cli file: {e}")
-        return None
+def load_p1cli_context(p1cli_paths: list[Path]) -> dict:
+    """Load content from all CONTEXT.p1cli files found."""
+    contexts = {}
+    for p1cli_path in p1cli_paths:
+        try:
+            contexts[str(p1cli_path)] = p1cli_path.read_text()
+        except Exception as e:
+            logger.error(f"Failed to read CONTEXT.p1cli file: {e}")
+    return contexts
 
 
 def list_submodules(package_path: Path) -> list[str]:

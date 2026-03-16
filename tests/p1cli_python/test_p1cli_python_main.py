@@ -150,34 +150,34 @@ class TestResolvePackage:
 class TestFindP1cliFile:
     def test_no_p1cli_file(self, tmp_path):
         result = find_p1cli_file(tmp_path)
-        assert result is None
+        assert result == []
 
     def test_p1cli_in_current_dir(self, tmp_path):
-        p1cli = tmp_path / ".p1cli"
+        p1cli = tmp_path / "CONTEXT.p1cli"
         p1cli.write_text("test content")
         result = find_p1cli_file(tmp_path)
-        assert result == p1cli
+        assert result == [p1cli]
 
     def test_p1cli_in_parent_dir(self, tmp_path):
-        p1cli = tmp_path / ".p1cli"
+        p1cli = tmp_path / "CONTEXT.p1cli"
         p1cli.write_text("test content")
         subdir = tmp_path / "subdir"
         subdir.mkdir()
         result = find_p1cli_file(subdir)
-        assert result == p1cli
+        assert result == [p1cli]
 
 
 class TestLoadP1cliContext:
     def test_load_existing_file(self, tmp_path):
         p1cli = tmp_path / ".p1cli"
         p1cli.write_text("test content")
-        result = load_p1cli_context(p1cli)
-        assert result == "test content"
+        result = load_p1cli_context([p1cli])
+        assert result == {str(p1cli): "test content"}
 
     def test_load_nonexistent_file(self, tmp_path):
         p1cli = tmp_path / "nonexistent"
-        result = load_p1cli_context(p1cli)
-        assert result is None
+        result = load_p1cli_context([p1cli])
+        assert result == {}
 
 
 class TestInspectModule:

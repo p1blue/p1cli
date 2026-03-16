@@ -25,7 +25,7 @@ def format_output(
     context: bool,
     json_output: bool,
     results: dict,
-    p1cli_path: object = None,
+    p1cli_paths: list = None,
 ) -> None:
     if json_output:
         print(json.dumps(results, indent=2))
@@ -33,8 +33,10 @@ def format_output(
 
     if ".p1cli" in results:
         print(f"### .p1cli Context")
-        print(results[".p1cli"]["context"])
-        print()
+        for path, content in results[".p1cli"].items():
+            print(f"#### {path}")
+            print(content)
+            print()
 
     if signature and docstrings and "grouped" in results:
         for group_name, items in results["grouped"].items():
@@ -49,8 +51,28 @@ def format_output(
                 if docstrings and "docstring" in item:
                     doc = item["docstring"]
                     if doc:
-                        first_line = doc.split("\n")[0][:80]
-                        print(f"    {first_line}")
+                        print()
+                        for line in doc.split("\n")[:30]:
+                            print(f"    {line}")
+                        if len(doc.split("\n")) > 30:
+                            print(f"    ...")
+                print()
+    elif "signatures" in results:
+        print(f"### {package}")
+        for name, sig in results["signatures"].items():
+            print(f"{name}{sig}")
+            if docstrings and "docstrings" in results and name in results["docstrings"]:
+                doc = results["docstrings"][name]
+                if doc:
+                    first_line = doc.split("\n")[0][:80]
+                    print(f"    {first_line}")
+    elif "docstrings" in results:
+        print(f"### {package}")
+        for name, doc in results["docstrings"].items():
+            print(f"{name}")
+            if doc:
+                first_line = doc.split("\n")[0][:80]
+                print(f"    {first_line}")
                 print()
     elif "signatures" in results:
         print(f"### {package}")
@@ -108,11 +130,11 @@ def python(
         docstrings = True
 
     results = {}
-    p1cli_path = None
+    p1cli_paths = []
     if context:
-        p1cli_path = find_p1cli_file(package_path)
-        if p1cli_path:
-            results[".p1cli"] = {"context": load_p1cli_context(p1cli_path)}
+        p1cli_paths = find_p1cli_file(package_path)
+        if p1cli_paths:
+            results[".p1cli"] = load_p1cli_context(p1cli_paths)
 
     if signature or docstrings:
         module = load_module(package_path, package)
@@ -147,7 +169,7 @@ def python(
                 results["docstrings"] = extract_docstrings(module, regex)
 
     format_output(
-        package, signature, docstrings, context, json_output, results, p1cli_path
+        package, signature, docstrings, context, json_output, results, p1cli_paths
     )
 
 

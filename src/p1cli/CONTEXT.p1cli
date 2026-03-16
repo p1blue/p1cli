@@ -1,0 +1,35 @@
+# p1cli - Overview
+
+## What is p1cli?
+
+A CLI tool to query Python packages directly from your `.venv`. No internet required.
+
+## Why use it?
+
+- Agents need accurate context about packages
+- MCP servers add complexity and potential drift
+- External docs may be outdated
+
+## Architecture
+
+```
+p1cli (root)
+├── main.py           # CLI entry point
+├── p1cli_python/     # Python package introspection
+│   ├── main.py       # Package resolution & loading
+│   ├── signature/   # Signature extraction
+│   └── docstring/   # Docstring extraction
+└── p1cli_typescript/ # (future) TypeScript support
+```
+
+## Workflow for agents
+
+1. Start with: `uv run p1cli python <package> --ls` to see what's available
+2. Pick a submodule: `uv run p1cli python <package>.<submodule> --context`
+3. Use `--json-output` for programmatic access
+
+## Key design decisions
+
+- Always queries the actual code in `.venv` - no abstraction layers
+- Supports both directory modules (polars.series) and file modules (fastapi.cli)
+- Context files provide human-written navigation hints
