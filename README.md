@@ -10,6 +10,8 @@ Agents need good context to succeed. Currently, this is solved with:
 
 p1cli takes a different approach: query the actual code in your `.venv`. What you see is what actually exists — no abstraction layers, no sync issues.
 
+For more information, check the documentation [here](https://p1blue.github.io/p1cli/)
+
 ## Install
 
 ```bash
