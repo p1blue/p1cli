@@ -1,5 +1,5 @@
 site_name: p1cli
-site_description: Query Python packages directly from your .venv — no internet required
+site_description: Let Agents Query Python packages directly from your .venv
 site_url: https://p1blue.github.io/p1cli
 repo_url: https://github.com/p1blue/p1cli
 repo_name: p1blue/p1cli
