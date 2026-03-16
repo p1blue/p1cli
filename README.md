@@ -1,14 +1,14 @@
 # p1cli - Package as a CLI
 
-This project aims to introduce the concept of PaaC, Package as a CLI. Query Python package signatures and documentation directly from your `.venv` — no internet connection required, no extra mcp setup. Built for agents that need accurate, in-place package introspection.
+This project aims to introduce the concept of PaaC, Package as a CLI. Query Python package signatures and documentation directly from your `.venv` — local first, no extra mcp setup. Built for agents that need accurate, in-place package introspection.
 
 ## Why?
 
 Agents need good context to succeed. Currently, this is solved with:
 - **MCP servers** - extra setup, token costs, potential drift from actual code
-- **External docs** - may be outdated, requires internet
+- **External docs with llms.txt** - may be outdated, requires internet
 
-p1cli takes a different approach: query the actual code in your `.venv`. What you see is what actually exists — no abstraction layers, no sync issues.
+p1cli takes a different approach: query the actual code in your `.venv`. What you see is what actually exists — no abstraction layers, no sync issues, local first.
 
 LLMs know really well standard library, but this approach is especially useful for private packages or less popular ones
 
