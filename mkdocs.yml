@@ -1,0 +1,55 @@
+site_name: p1cli
+site_description: Query Python packages directly from your .venv — no internet required
+site_url: https://p1blue.github.io/p1cli
+repo_url: https://github.com/p1blue/p1cli
+repo_name: p1blue/p1cli
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: "#0288d1"
+      accent: "#0288d1"
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: "#29b6f6"
+      accent: "#29b6f6"
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/p1blue/p1cli
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Context Files: context.md
+  - API Reference: api.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search:
+      lang: en

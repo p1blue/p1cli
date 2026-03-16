@@ -1,101 +1,52 @@
-# p1cli Documentation
+# p1cli — Package as a CLI
 
-## Overview
+**Query Python package signatures and documentation directly from your `.venv` — no internet required.**
 
-p1cli queries Python packages directly from your `.venv` to extract signatures and docstrings. No internet, no MCP, no outdated docs.
+p1cli is built for AI agents that need accurate, in-place package introspection. Instead of setting up MCP servers or relying on potentially outdated external docs, query the actual code in your local environment.
 
-## Requirements
+## Why p1cli?
 
-- Python 3.13+
-- uv (for package management)
-- Packages must be installed in `.venv`
+| Approach | Pros | Cons |
+|----------|------|------|
+| **p1cli** | Always accurate, no setup, free | Only works locally |
+| **MCP servers** | Rich features | Extra setup, token costs, potential drift |
+| **External docs** | Comprehensive | May be outdated, requires internet |
 
-## Installation
-
-```bash
-uv pip install -e .
-```
-
-Or run directly:
-```bash
-uv run p1cli <command>
-```
-
-## Commands
-
-### Query a Package
+## Quick Example
 
 ```bash
+# Query a package
 uv run p1cli python polars
-```
 
-Output:
-```
-=== polars ===
-DataFrame(data=None, schema=None, ...)
-    Two-dimensional data structure...
-DataType()
-    Base class for all Polars...
-```
-
-### List Submodules
-
-```bash
+# List submodules
 uv run p1cli python polars --ls
-```
 
-### Query a Submodule
-
-```bash
+# Query a submodule
 uv run p1cli python polars.series
-uv run p1cli python fastapi.cli
-```
 
-### Filter with Regex
-
-```bash
-uv run p1cli python polars --regex "^Data"
-```
-
-### JSON Output
-
-```bash
+# JSON output for agents
 uv run p1cli python polars --json-output
 ```
 
-## Flags
+## Key Features
 
-| Flag | Short | Default | Description |
-|------|-------|---------|-------------|
-| `--ls` | | false | List submodules |
-| `--signature` | -s | true | Show signatures |
-| `--docstrings` | -d | true | Show docstrings |
-| `--regex` | -r | | Filter by regex |
-| `--json-output` | -j | false | JSON output |
-| `--context` | -c | false | Show `.p1cli` file |
+- **Local-first** — Queries packages in your `.venv`, no internet needed
+- **Agent-optimized** — Clean JSON output for programmatic use
+- **Smart grouping** — Classes, functions, methods automatically categorized
+- **Context files** — Human-written hints to help agents navigate
 
-## .p1cli Files
+## Who is this for?
 
-Place a `.p1cli` file in a package directory to add custom context:
+- **AI agents** that need reliable package information
+- **Developers** who want quick access to local package APIs
+- **Teams** working offline or with private packages
+
+## Agent Skill
+
+p1cli is available as an installable skill for AI agents:
 
 ```bash
-echo "# Custom notes" > .venv/lib/python3.13/site-packages/mypackage/.p1cli
-uv run p1cli python mypackage --context
+npx skills add p1blue/p1cli@p1cli
 ```
 
-## For Agents
-
-p1cli is designed for AI agents that need accurate package information:
-
-1. **Run in project context**: The agent must run p1cli from a directory with `.venv`
-2. **JSON output**: Use `--json-output` for reliable parsing
-3. **Submodule exploration**: Use `--ls` to discover available modules, then query them directly
-
-Example agent workflow:
-```bash
-# Discover what's available
-uv run p1cli python requests --ls
-
-# Query a specific submodule
-uv run p1cli python requests.api
-```
+This enables agents to use p1cli commands directly.

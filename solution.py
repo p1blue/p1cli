@@ -1,0 +1,18 @@
+import polars as pl
+
+df = pl.DataFrame(
+    {
+        "name": ["Alice", "Bob", "Charlie", "Diana", "Eve"],
+        "age": [28, 35, 42, 29, 31],
+        "department": ["Engineering", "Engineering", "Sales", "HR", "Engineering"],
+        "salary": [70000, 80000, 65000, 55000, 75000],
+    }
+)
+
+filtered = df.filter(pl.col("age") > 30)
+
+result = filtered.group_by("department").agg(
+    pl.col("salary").mean().alias("mean_salary")
+)
+
+print(result)

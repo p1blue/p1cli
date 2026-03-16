@@ -16,6 +16,16 @@ p1cli takes a different approach: query the actual code in your `.venv`. What yo
 uv pip install -e .
 ```
 
+## Agent Skill
+
+p1cli is also available as an installable skill for AI agents:
+
+```bash
+npx skills add p1blue/p1cli@p1cli
+```
+
+This enables agents to use p1cli commands directly.
+
 ## Quick Usage
 
 ```bash
@@ -46,9 +56,12 @@ uv run p1cli python polars --json-output
 | `--json-output` | Output as JSON |
 | `--context` | Show `.p1cli` context file if present |
 
+## License
+
+MIT © 2026 p1blue
 
 ## Disclaimers
 
 This is mainly vibe coded to quickly try out this and test the idea. So far, it helps me a lot with agent workflows, this is a global intuition that I have. It could be useful to run benchmarks on this.
 
-Also, I'm currently working almost exclusively with python, and I don't have much time to spend for now, so only python is available. Feel free to implement other languages if you want to 
+Also, I'm currently working almost exclusively with python, and I don't have much time to spend for now, so only python is available. Feel free to implement other languages if you want to

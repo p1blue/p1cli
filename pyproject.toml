@@ -1,16 +1,18 @@
 [project]
 name = "p1cli"
 version = "0.1.0"
-description = "Add your description here"
+description = "Query Python package signatures and documentation directly from your .venv — no internet required"
 readme = "README.md"
 requires-python = ">=3.13"
+license = {text = "MIT"}
 dependencies = [
-    "cyclopts==4.9.0"
+    "cyclopts==4.9.0",
 ]
 
 [dependency-groups]
 dev = [
     "fastapi>=0.135.1",
+    "mkdocs>=1.6.1",
     "polars>=1.39.0",
     "pytest>=8.0.0",
 ]
