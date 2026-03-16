@@ -4,4 +4,30 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "cyclopts==4.9.0"
+]
+
+[dependency-groups]
+dev = [
+    "fastapi>=0.135.1",
+    "polars>=1.39.0",
+    "pytest>=8.0.0",
+]
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+p1auth = "p1cli.main:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::UserWarning:pydantic_settings.main",
+    "ignore::UserWarning:pydantic._internal._generate_schema",
+    "ignore::DeprecationWarning:prefect.client.base"
+]
+
