@@ -261,14 +261,14 @@ class TestCLI:
 
     def test_cli_json_output(self):
         result = subprocess.run(
-            ["python", "-m", "p1cli.main", "python", "polars", "--json-output"],
+            ["uv", "run", "p1cli", "python", "polars", "--json-output"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
         assert result.stdout.startswith("{")
-        assert '"signatures"' in result.stdout
+        assert '"grouped"' in result.stdout
 
     def test_cli_ls(self):
         result = subprocess.run(
@@ -299,18 +299,17 @@ class TestCLI:
             cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
-        assert "polars.series" in result.stdout
         assert "Series" in result.stdout
 
     def test_cli_submodule_dataframe(self):
         result = subprocess.run(
-            ["python", "-m", "p1cli.main", "python", "polars.dataframe"],
+            ["uv", "run", "p1cli", "python", "polars.dataframe"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent.parent,
         )
         assert result.returncode == 0
-        assert "polars.dataframe" in result.stdout
+        assert "DataFrame" in result.stdout
 
     def test_cli_not_found(self):
         result = subprocess.run(

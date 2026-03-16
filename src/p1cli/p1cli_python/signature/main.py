@@ -29,6 +29,21 @@ def get_signature(obj: Any) -> str:
     return "()"
 
 
+def get_object_type(obj: Any) -> str:
+    if inspect.isclass(obj):
+        return "Class"
+    elif inspect.isfunction(obj):
+        return "Function"
+    elif inspect.ismethod(obj):
+        return "Method"
+    elif inspect.isbuiltin(obj):
+        return "Builtin"
+    elif inspect.iscoroutinefunction(obj):
+        return "Coroutine"
+    else:
+        return "Other"
+
+
 def extract_signatures(module: Any, regex: str | None = None) -> dict[str, str]:
     import re
 
@@ -47,3 +62,36 @@ def extract_signatures(module: Any, regex: str | None = None) -> dict[str, str]:
         if sig:
             results[name] = sig
     return results
+
+
+def extract_signatures_grouped(
+    module: Any, regex: str | None = None
+) -> dict[str, list[dict]]:
+    import re
+
+    pattern = re.compile(regex) if regex else None
+    groups: dict[str, list[dict]] = {
+        "Class": [],
+        "Function": [],
+        "Method": [],
+        "Coroutine": [],
+        "Builtin": [],
+        "Other": [],
+    }
+
+    for name in dir(module):
+        if not is_public(name):
+            continue
+        if pattern and not pattern.search(name):
+            continue
+        try:
+            obj = getattr(module, name)
+        except Exception:
+            continue
+
+        obj_type = get_object_type(obj)
+        sig = get_signature(obj)
+        if sig:
+            groups[obj_type].append({"name": name, "signature": sig})
+
+    return {k: v for k, v in groups.items() if v}
