@@ -62,6 +62,23 @@ def find_package_in_venv(package_name: str, venv_path: Path) -> Path | None:
 
 
 def get_package_path(package_name: str) -> Path | None:
+    if package_name == "p1cli" or package_name.startswith("p1cli."):
+        src_path = Path.cwd() / "src" / "p1cli"
+        if not src_path.exists():
+            src_path = Path(__file__).resolve().parent.parent.parent / "src" / "p1cli"
+
+        if src_path.exists():
+            if package_name == "p1cli":
+                return src_path
+            submodule = package_name.replace("p1cli.", "")
+            submodule_path = src_path / submodule
+            if submodule_path.exists():
+                return submodule_path
+            py_file = src_path / f"{submodule}.py"
+            if py_file.exists():
+                return py_file
+            return src_path
+
     try:
         result = subprocess.run(
             ["uv", "tree", "--depth", "1"],
