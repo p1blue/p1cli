@@ -10,6 +10,9 @@
 - [x] Implement --context flag and .p1cli file support
 - [x] Write comprehensive pytest tests (31 tests)
 - [x] Final verification
+- [x] Reorganize code into src/p1cli/ structure
+- [x] Add `python` subcommand (`uv run p1cli python polars`)
+- [x] Separate signature and docstring modules under p1cli_python/
 
 ## Future improvements
 - Add support for submodule inspection (e.g., polars.dataframes)

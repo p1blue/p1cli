@@ -3,17 +3,15 @@ from pathlib import Path
 import sys
 import subprocess
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from main import (
-    is_public,
-    get_signature,
-    get_docstring,
+from p1cli.p1cli_python.signature import is_public, get_signature, extract_signatures
+from p1cli.p1cli_python.docstring import get_docstring, extract_docstrings
+from p1cli.p1cli_python import (
     find_package_in_venv,
     resolve_package,
     find_p1cli_file,
     load_p1cli_context,
-    inspect_module,
 )
 
 
@@ -172,42 +170,51 @@ class TestInspectModule:
     def test_inspect_polars(self):
         path = resolve_package("polars")
         assert path is not None
-        result = inspect_module(path, "polars", signature=True, docstrings=True)
-        assert result is not None
-        assert len(result) > 0
-        assert "DataFrame" in result
+        from p1cli.p1cli_python import load_module
+
+        module = load_module(path, "polars")
+        assert module is not None
+        sigs = extract_signatures(module)
+        assert len(sigs) > 0
+        assert "DataFrame" in sigs
 
     def test_inspect_with_regex(self):
         path = resolve_package("polars")
         assert path is not None
-        result = inspect_module(path, "polars", signature=True, regex=r"^Data")
-        assert result is not None
-        assert "DataFrame" in result
-        assert "DataType" in result
+        from p1cli.p1cli_python import load_module
+
+        module = load_module(path, "polars")
+        assert module is not None
+        sigs = extract_signatures(module, regex=r"^Data")
+        assert "DataFrame" in sigs
+        assert "DataType" in sigs
 
     def test_inspect_signature_only(self):
         path = resolve_package("polars")
         assert path is not None
-        result = inspect_module(path, "polars", signature=True, docstrings=False)
-        assert result is not None
-        for name, info in result.items():
-            assert "signature" in info
-            assert "docstring" not in info
+        from p1cli.p1cli_python import load_module
+
+        module = load_module(path, "polars")
+        assert module is not None
+        sigs = extract_signatures(module)
+        assert len(sigs) > 0
+        assert "DataFrame" in sigs
 
     def test_inspect_docstrings_only(self):
         path = resolve_package("polars")
         assert path is not None
-        result = inspect_module(path, "polars", signature=False, docstrings=True)
-        assert result is not None
-        for name, info in result.items():
-            assert "docstring" in info
-            assert "signature" not in info
+        from p1cli.p1cli_python import load_module
+
+        module = load_module(path, "polars")
+        assert module is not None
+        docs = extract_docstrings(module)
+        assert len(docs) > 0
 
 
 class TestCLI:
     def test_cli_polars(self):
         result = subprocess.run(
-            ["python", "main.py", "polars"],
+            ["python", "-m", "p1cli.main", "python", "polars"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent,
@@ -218,7 +225,7 @@ class TestCLI:
 
     def test_cli_fastapi(self):
         result = subprocess.run(
-            ["python", "main.py", "fastapi"],
+            ["python", "-m", "p1cli.main", "python", "fastapi"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent,
@@ -229,7 +236,7 @@ class TestCLI:
 
     def test_cli_regex_filter(self):
         result = subprocess.run(
-            ["python", "main.py", "polars", "--regex", "^Data"],
+            ["python", "-m", "p1cli.main", "python", "polars", "--regex", "^Data"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent,
@@ -240,18 +247,18 @@ class TestCLI:
 
     def test_cli_json_output(self):
         result = subprocess.run(
-            ["python", "main.py", "polars", "--json-output"],
+            ["python", "-m", "p1cli.main", "python", "polars", "--json-output"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent,
         )
         assert result.returncode == 0
         assert result.stdout.startswith("{")
-        assert '"members"' in result.stdout
+        assert '"signatures"' in result.stdout
 
     def test_cli_not_found(self):
         result = subprocess.run(
-            ["python", "main.py", "nonexistent_package_xyz"],
+            ["python", "-m", "p1cli.main", "python", "nonexistent_package_xyz"],
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent,

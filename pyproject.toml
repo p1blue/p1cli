@@ -15,12 +15,14 @@ dev = [
     "pytest>=8.0.0",
 ]
 
+[tool.uv]
+package = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [project.scripts]
-p1auth = "p1cli.main:main"
+p1cli = "p1cli.main:app"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
